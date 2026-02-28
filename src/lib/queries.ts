@@ -239,6 +239,10 @@ export async function getCommandsList() {
   return data ?? [];
 }
 
+/**
+ * Creates a worker command for the given instance (e.g. start_agent, stop_agent).
+ * Stored with status "queued" so GET /api/worker/commands/poll?instance_id=... can return it.
+ */
 export async function enqueueCommand(instanceId: string, type: CommandType) {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase

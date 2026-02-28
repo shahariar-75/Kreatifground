@@ -4,6 +4,13 @@ import { verifyWorkerRequest } from "@/lib/auth";
 import { pollSchema } from "@/lib/schemas";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
+/**
+ * GET /api/worker/commands/poll?instance_id=<instance_id>
+ *
+ * Returns the oldest queued command for the given instance_id (same value the worker sends).
+ * Response: { "command": { "id", "type", "payload" } } or { "command": null } if none or one is already active.
+ * One active command per instance (claimed/running); queued commands are returned in created_at order.
+ */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const parsed = pollSchema.safeParse({
@@ -25,6 +32,8 @@ export async function GET(request: Request) {
   if (auth.error) return auth.error;
 
   const supabase = getSupabaseAdmin();
+
+  // One active command per instance: do not return a new one while one is claimed/running
   const { data: activeData, error: activeError } = await supabase
     .from("commands")
     .select("id")
@@ -43,6 +52,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ command: null });
   }
 
+  // Oldest queued command for this instance
   const { data, error } = await supabase
     .from("commands")
     .select("id, type, payload")
