@@ -1,3 +1,5 @@
+import { ChangePasswordForm } from "./change-password-form";
+
 export default function SettingsPage() {
   const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL ?? "http://localhost:3000";
   const adminToken = process.env.ADMIN_TOKEN ?? "not-configured";
@@ -7,11 +9,14 @@ export default function SettingsPage() {
       <header className="rounded-2xl border border-white/10 bg-white/5 p-4">
         <h1 className="text-xl font-semibold sm:text-2xl">Settings & Onboarding</h1>
         <p className="mt-1 text-sm text-slate-300">
-          API menu, keys, and onboarding instructions.
+          API menu, keys, account, and onboarding instructions.
         </p>
       </header>
 
-      <nav className="sticky top-2 z-10 grid gap-2 rounded-2xl border border-white/10 bg-slate-900/80 p-2 backdrop-blur sm:grid-cols-4">
+      <nav className="sticky top-2 z-10 grid gap-2 rounded-2xl border border-white/10 bg-slate-900/80 p-2 backdrop-blur sm:grid-cols-5">
+        <a href="#account" className="rounded-lg px-3 py-2 text-center text-xs text-slate-200 hover:bg-white/10">
+          Account
+        </a>
         <a href="#api-menu" className="rounded-lg px-3 py-2 text-center text-xs text-slate-200 hover:bg-white/10">
           API Menu
         </a>
@@ -25,6 +30,14 @@ export default function SettingsPage() {
           instance.json
         </a>
       </nav>
+
+      <section id="account" className="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <h2 className="mb-2 text-sm font-semibold">Change password</h2>
+        <p className="mb-3 text-sm text-slate-300">
+          Update your login password. You will use the new password next time you sign in.
+        </p>
+        <ChangePasswordForm />
+      </section>
 
       <section id="api-menu" className="rounded-2xl border border-white/10 bg-white/5 p-4">
         <h2 className="mb-2 text-sm font-semibold">API Menu</h2>

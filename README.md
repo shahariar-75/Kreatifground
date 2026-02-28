@@ -26,13 +26,26 @@ corepack pnpm install
 - `supabase/migrations/20260227_agents_hierarchy.sql`
 - `supabase/migrations/20260227_agents_image.sql`
 
-4. Run dev server:
+4. **Create the admin login user** (once). Call the setup API with your `ADMIN_TOKEN`:
+
+```bash
+curl -X POST http://localhost:3000/api/setup-create-admin -H "Authorization: Bearer YOUR_ADMIN_TOKEN"
+```
+
+This creates a Supabase Auth user:
+
+- **Email:** `mr.shahariar.joy@gmail.com`
+- **Temporary password:** `BotOpsAdmin2025!`
+
+Sign in at `/login`, then change your password from **Settings → Change password**.
+
+5. Run dev server:
 
 ```bash
 corepack pnpm dev
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:3000`. Unauthenticated visitors are redirected to `/login`.
 
 ## Environment variables
 

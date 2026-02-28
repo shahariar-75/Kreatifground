@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { Activity, Bot, Command, Home, Settings2 } from "lucide-react";
+import { Activity, Bot, Command, Home, LogOut, Settings2 } from "lucide-react";
+
+import { signOutAction } from "@/app/auth-actions";
 
 const navItems = [
   { href: "/", label: "Overview", icon: Home },
@@ -35,13 +37,22 @@ export function NavShell({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
+          <form action={signOutAction} className="pt-4">
+            <button
+              type="submit"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-slate-200 transition hover:bg-white/10"
+            >
+              <LogOut size={16} />
+              Log out
+            </button>
+          </form>
         </nav>
       </aside>
 
       <div className="flex min-h-screen w-full flex-col">
         <main className="flex-1 px-4 pb-28 pt-4 sm:px-6 lg:px-8 lg:pb-8 lg:pt-8">{children}</main>
         <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-slate-900/85 px-4 py-3 backdrop-blur lg:hidden">
-          <div className="mx-auto grid max-w-md grid-cols-4 gap-1">
+          <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -55,6 +66,15 @@ export function NavShell({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
+            <form action={signOutAction} className="flex flex-col items-center gap-1">
+              <button
+                type="submit"
+                className="flex flex-col items-center gap-1 rounded-lg px-2 py-2 text-[11px] text-slate-200 transition active:bg-white/10"
+              >
+                <LogOut size={15} />
+                Log out
+              </button>
+            </form>
           </div>
         </nav>
       </div>
