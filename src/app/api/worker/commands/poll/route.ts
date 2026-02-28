@@ -52,10 +52,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ command: null });
   }
 
-  // Oldest queued command for this instance
+  // Oldest queued command for this instance (include created_at so worker can ignore old commands)
   const { data, error } = await supabase
     .from("commands")
-    .select("id, type, payload")
+    .select("id, type, payload, created_at")
     .eq("instance_id", instanceId)
     .eq("status", "queued")
     .order("created_at", { ascending: true })
