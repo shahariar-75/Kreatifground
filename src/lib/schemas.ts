@@ -36,12 +36,12 @@ export const pollSchema = z.object({
 
 export const claimSchema = z.object({
   instance_id: z.string().min(1).max(120),
-  command_id: z.uuid(),
+  command_id: z.string().min(1),
 });
 
 export const ackSchema = z.object({
   instance_id: z.string().min(1).max(120),
-  command_id: z.string().uuid(),
+  command_id: z.string().min(1),
   success: z.union([
     z.boolean(),
     z.enum(["true", "false", "1", "0"]).transform((s) => s === "true" || s === "1"),
