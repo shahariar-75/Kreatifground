@@ -31,14 +31,29 @@ export default async function InstanceDetailPage({ params }: Params) {
             </h1>
             <p className="text-xs text-slate-400">{instance.instance_id}</p>
           </div>
-          <div className="flex gap-2">
-            <StatusPill status={instance.status} />
-            <StatusPill status={data.heartbeats[0]?.agent_status ?? "unknown"} />
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400">Worker</span>
+              <StatusPill status={instance.status} />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400">Agent</span>
+              <StatusPill status={data.heartbeats[0]?.agent_status ?? "unknown"} />
+            </div>
           </div>
         </div>
         <p className="mt-2 text-sm text-slate-300">
-          Last seen: {formatTimestamp(instance.last_seen)} | PID:{" "}
-          {data.heartbeats[0]?.pid ?? "n/a"}
+          Last seen: {formatTimestamp(instance.last_seen)}
+          {typeof data.heartbeats[0]?.pid === "number" && (
+            <> · Agent PID: {data.heartbeats[0].pid}</>
+          )}
+        </p>
+        <p className="mt-1 text-xs text-slate-400">
+          {data.heartbeats[0]?.agent_status === "running"
+            ? "Agent process is running on the worker."
+            : data.heartbeats[0]?.agent_status === "stopped"
+              ? "Agent process is stopped."
+              : "Agent status unknown until next heartbeat."}
         </p>
         <div className="mt-3">
           <CommandActions instanceId={instance.instance_id} />

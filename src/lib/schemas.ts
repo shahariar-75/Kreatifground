@@ -41,10 +41,13 @@ export const claimSchema = z.object({
 
 export const ackSchema = z.object({
   instance_id: z.string().min(1).max(120),
-  command_id: z.uuid(),
-  success: z.boolean(),
-  error_message: z.string().max(2000).optional(),
-  result: z.record(z.string(), z.unknown()).optional(),
+  command_id: z.string().uuid(),
+  success: z.union([
+    z.boolean(),
+    z.enum(["true", "false", "1", "0"]).transform((s) => s === "true" || s === "1"),
+  ]),
+  error_message: z.string().max(2000).nullable().optional(),
+  result: z.record(z.string(), z.unknown()).nullable().optional(),
   logs_tail: z.string().max(12000).optional(),
 });
 

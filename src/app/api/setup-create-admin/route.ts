@@ -18,28 +18,53 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = getSupabaseAdmin();
+  let bodyPassword: string | null = null;
+  try {
+    const body = await request.json().catch(() => ({}));
+    if (typeof body?.password === "string" && body.password.length >= 8) {
+      bodyPassword = body.password;
+    }
+  } catch {
+    // ignore
+  }
 
-  const { data: existing } = await supabase.auth.admin.listUsers();
-  const alreadyExists = existing?.users?.some(
+  const supabase = getSupabaseAdmin();
+  const { data: listData } = await supabase.auth.admin.listUsers();
+  const existingUser = listData?.users?.find(
     (u) => u.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase(),
   );
-  if (alreadyExists) {
+
+  if (existingUser) {
+    const newPassword = bodyPassword ?? INITIAL_PASSWORD;
+    const { error: updateError } = await supabase.auth.admin.updateUserById(
+      existingUser.id,
+      { password: newPassword },
+    );
+    if (updateError) {
+      return NextResponse.json(
+        { ok: false, error: updateError.message },
+        { status: 400 },
+      );
+    }
     return NextResponse.json({
       ok: true,
-      message: "Admin user already exists. Sign in at /login.",
+      message: "Admin password has been reset. Sign in at /login.",
+      email: ADMIN_EMAIL,
+      password: newPassword,
+      hint: "Change your password from Settings after first login.",
     });
   }
 
-  const { data, error } = await supabase.auth.admin.createUser({
+  const password = bodyPassword ?? INITIAL_PASSWORD;
+  const { error: createError } = await supabase.auth.admin.createUser({
     email: ADMIN_EMAIL,
-    password: INITIAL_PASSWORD,
+    password,
     email_confirm: true,
   });
 
-  if (error) {
+  if (createError) {
     return NextResponse.json(
-      { ok: false, error: error.message },
+      { ok: false, error: createError.message },
       { status: 400 },
     );
   }
@@ -48,7 +73,7 @@ export async function POST(request: Request) {
     ok: true,
     message: "Admin user created. Sign in at /login.",
     email: ADMIN_EMAIL,
-    temporaryPassword: INITIAL_PASSWORD,
+    password,
     hint: "Change your password from Settings after first login.",
   });
 }

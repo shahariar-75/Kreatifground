@@ -241,16 +241,21 @@ export async function getCommandsList() {
 
 export async function enqueueCommand(instanceId: string, type: CommandType) {
   const supabase = getSupabaseAdmin();
-  const { error } = await supabase.from("commands").insert({
-    instance_id: instanceId,
-    type,
-    payload: {},
-    status: "queued",
-  });
+  const { data, error } = await supabase
+    .from("commands")
+    .insert({
+      instance_id: instanceId,
+      type,
+      payload: {},
+      status: "queued",
+    })
+    .select("id")
+    .single();
 
   if (error) {
     throw new Error(error.message);
   }
+  return data?.id ?? null;
 }
 
 export async function updateAgentProfile(

@@ -68,8 +68,10 @@ export default async function AgentDetailPage({ params }: Params) {
                 </p>
                 <p className="truncate text-xs text-slate-400">{instance.instance_id}</p>
               </Link>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-400">Worker</span>
                 <StatusPill status={instance.status} />
+                <span className="text-xs text-slate-400">Agent</span>
                 <StatusPill status={instance.agent_status} />
               </div>
             </div>

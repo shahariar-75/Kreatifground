@@ -1,7 +1,24 @@
-import { ChangePasswordForm } from "./change-password-form";
+import { headers } from "next/headers";
 
-export default function SettingsPage() {
-  const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL ?? "http://localhost:3000";
+import { ChangePasswordForm } from "./change-password-form";
+import { GenerateWorkerTokenForm } from "./generate-worker-token-form";
+
+async function getBaseUrl() {
+  if (process.env.NEXT_PUBLIC_DASHBOARD_URL) {
+    return process.env.NEXT_PUBLIC_DASHBOARD_URL;
+  }
+  try {
+    const h = await headers();
+    const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
+    const proto = h.get("x-forwarded-proto") ?? "http";
+    return `${proto}://${host}`;
+  } catch {
+    return "http://localhost:3000";
+  }
+}
+
+export default async function SettingsPage() {
+  const dashboardUrl = await getBaseUrl();
   const adminToken = process.env.ADMIN_TOKEN ?? "not-configured";
 
   return (
@@ -13,7 +30,7 @@ export default function SettingsPage() {
         </p>
       </header>
 
-      <nav className="sticky top-2 z-10 grid gap-2 rounded-2xl border border-white/10 bg-slate-900/80 p-2 backdrop-blur sm:grid-cols-5">
+      <nav className="sticky top-2 z-10 grid gap-2 rounded-2xl border border-white/10 bg-slate-900/80 p-2 backdrop-blur sm:grid-cols-6">
         <a href="#account" className="rounded-lg px-3 py-2 text-center text-xs text-slate-200 hover:bg-white/10">
           Account
         </a>
@@ -22,6 +39,9 @@ export default function SettingsPage() {
         </a>
         <a href="#keys" className="rounded-lg px-3 py-2 text-center text-xs text-slate-200 hover:bg-white/10">
           Keys
+        </a>
+        <a href="#worker-token" className="rounded-lg px-3 py-2 text-center text-xs text-slate-200 hover:bg-white/10">
+          Worker Token
         </a>
         <a href="#worker" className="rounded-lg px-3 py-2 text-center text-xs text-slate-200 hover:bg-white/10">
           Worker Setup
@@ -69,8 +89,17 @@ POST /api/admin/instances/:id/mark-offline`}
 {adminToken}
         </pre>
         <p className="mt-3 text-xs text-slate-400">
-          Worker tokens are per-instance and should be shared only inside each worker `instance.json`.
+          Generate worker tokens in the <a href="#worker-token" className="text-cyan-300 hover:underline">Worker Token</a> section below. Each instance has its own token for secure registration and reporting.
         </p>
+      </section>
+
+      <section id="worker-token" className="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <h2 className="mb-2 text-sm font-semibold">Generate worker token</h2>
+        <p className="mb-3 text-sm text-slate-300">
+          Create a new instance and get a worker token. Put the token in your worker’s{" "}
+          <code className="rounded bg-slate-800 px-1">instance.json</code> so it can register and report to this dashboard.
+        </p>
+        <GenerateWorkerTokenForm dashboardUrl={dashboardUrl} />
       </section>
 
       <section id="worker" className="rounded-2xl border border-white/10 bg-white/5 p-4">

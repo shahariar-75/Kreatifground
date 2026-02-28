@@ -7,7 +7,9 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function POST(request: Request) {
   const parsed = await parseJsonBody(request, ackSchema);
-  if (parsed.error) return parsed.error;
+  if (parsed.error) {
+    return parsed.error;
+  }
 
   const { instance_id, command_id, success, error_message, result, logs_tail } =
     parsed.data;
